@@ -19,14 +19,19 @@ All brokers are configured to run in KRaft mode with:
 - Automatic topic creation disabled
 
 ### Kafka UI
+<img src="readme/kafka-ui.jpeg" width="70%">
+
 - **kafka-ui**: Web-based UI for browsing topics, messages, partitions, and consumer groups
 - Accessible at `http://localhost:8078`
 - Connected to all three Kafka brokers for cluster management
 
 ### AKHQ
+<img src="readme/akhq.jpeg" width="70%">
+
 - **akhq**: Alternative web-based UI for Kafka management and monitoring
 - Accessible at `http://localhost:8079`
 - Provides similar functionality to kafka-ui with a different interface
+
 
 ## Usage
 
