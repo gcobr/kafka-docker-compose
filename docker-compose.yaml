@@ -1,0 +1,251 @@
+version: "3.9"
+
+services:
+  kafka-1:
+    # Official Apache Kafka image, available on Docker Hub and published by the Apache project.
+    image: apache/kafka:4.2.0
+    container_name: kafka-1
+    hostname: kafka-1
+    ports:
+      # Host port for external clients running on your Mac.
+      - "9094:9094"
+
+    environment:
+      # Unique node ID for this broker/controller in the KRaft cluster.
+      - KAFKA_NODE_ID=1
+
+      # This node runs both the broker role and the controller role.
+      - KAFKA_PROCESS_ROLES=broker,controller
+
+      # The listener name used by the KRaft controller quorum.
+      - KAFKA_CONTROLLER_LISTENER_NAMES=CONTROLLER
+
+      # Define all listeners this node binds to:
+      # DOCKER     -> internal Docker network clients
+      # CONTROLLER -> controller quorum traffic
+      # HOST       -> clients running on the host machine
+      - KAFKA_LISTENERS=DOCKER://0.0.0.0:9092,CONTROLLER://0.0.0.0:9093,HOST://0.0.0.0:9094
+
+      # Addresses Kafka advertises back to clients after bootstrap:
+      # internal Docker clients use kafka-1:9092
+      # host-based clients use localhost:9094
+      - KAFKA_ADVERTISED_LISTENERS=DOCKER://kafka-1:9092,HOST://localhost:9094
+
+      # Map logical listener names to security protocols.
+      # This setup uses plaintext only for local development.
+      - KAFKA_LISTENER_SECURITY_PROTOCOL_MAP=CONTROLLER:PLAINTEXT,DOCKER:PLAINTEXT,HOST:PLAINTEXT
+
+      # Broker-to-broker traffic should use the internal Docker listener.
+      - KAFKA_INTER_BROKER_LISTENER_NAME=DOCKER
+
+      # KRaft controller quorum members:
+      # nodeId@hostname:controllerPort
+      - KAFKA_CONTROLLER_QUORUM_VOTERS=1@kafka-1:9093,2@kafka-2:9093,3@kafka-3:9093
+
+      # Shared cluster ID for all nodes in this KRaft cluster.
+      # Must be identical across all brokers/controllers.
+      - KAFKA_CLUSTER_ID=abcdefghijklmnopqrstuv
+
+      # Prevent Kafka from auto-creating topics implicitly.
+      - KAFKA_AUTO_CREATE_TOPICS_ENABLE=false
+
+      # Replication factor for the internal consumer offsets topic.
+      - KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR=3
+
+      # Replication factor for transaction state log.
+      - KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR=3
+
+      # Minimum in-sync replicas required for transaction state log writes.
+      - KAFKA_TRANSACTION_STATE_LOG_MIN_ISR=2
+
+      # Default replication factor for topics created without an explicit value.
+      - KAFKA_DEFAULT_REPLICATION_FACTOR=3
+
+      # Minimum number of replicas that must acknowledge writes.
+      - KAFKA_MIN_INSYNC_REPLICAS=2
+
+      # Allow plaintext listeners for this local-only development cluster.
+      - KAFKA_ALLOW_PLAINTEXT_LISTENER=true
+
+    volumes:
+      # Persist Kafka broker data to a named Docker volume.
+      # The official Apache image exposes /var/lib/kafka/data as a volume path.
+      - kafka_1_:/var/lib/kafka/data
+
+  kafka-2:
+    image: apache/kafka:4.2.0
+    container_name: kafka-2
+    hostname: kafka-2
+    ports:
+      # Host port for external clients running on your Mac.
+      - "9095:9094"
+
+    environment:
+      # Unique node ID for this broker/controller in the KRaft cluster.
+      - KAFKA_NODE_ID=2
+
+      # This node runs both the broker role and the controller role.
+      - KAFKA_PROCESS_ROLES=broker,controller
+
+      # The listener name used by the KRaft controller quorum.
+      - KAFKA_CONTROLLER_LISTENER_NAMES=CONTROLLER
+
+      # Internal, controller, and external listeners.
+      - KAFKA_LISTENERS=DOCKER://0.0.0.0:9092,CONTROLLER://0.0.0.0:9093,HOST://0.0.0.0:9094
+
+      # Advertised addresses for Docker-network and host-machine clients.
+      - KAFKA_ADVERTISED_LISTENERS=DOCKER://kafka-2:9092,HOST://localhost:9095
+
+      # Listener protocol mapping.
+      - KAFKA_LISTENER_SECURITY_PROTOCOL_MAP=CONTROLLER:PLAINTEXT,DOCKER:PLAINTEXT,HOST:PLAINTEXT
+
+      # Inter-broker communication stays on the Docker network.
+      - KAFKA_INTER_BROKER_LISTENER_NAME=DOCKER
+
+      # Shared three-node KRaft controller quorum.
+      - KAFKA_CONTROLLER_QUORUM_VOTERS=1@kafka-1:9093,2@kafka-2:9093,3@kafka-3:9093
+
+      # Shared cluster ID for all nodes.
+      - KAFKA_CLUSTER_ID=abcdefghijklmnopqrstuv
+
+      # Disable automatic topic creation.
+      - KAFKA_AUTO_CREATE_TOPICS_ENABLE=false
+
+      # Internal topic durability settings for a 3-node cluster.
+      - KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR=3
+      - KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR=3
+      - KAFKA_TRANSACTION_STATE_LOG_MIN_ISR=2
+      - KAFKA_DEFAULT_REPLICATION_FACTOR=3
+      - KAFKA_MIN_INSYNC_REPLICAS=2
+
+      # Allow plaintext listeners for local development.
+      - KAFKA_ALLOW_PLAINTEXT_LISTENER=true
+
+    volumes:
+      # Persist Kafka broker data for node 2.
+      - kafka_2_:/var/lib/kafka/data
+
+  kafka-3:
+    image: apache/kafka:4.2.0
+    container_name: kafka-3
+    hostname: kafka-3
+    ports:
+      # Host port for external clients running on your Mac.
+      - "9096:9094"
+
+    environment:
+      # Unique node ID for this broker/controller in the KRaft cluster.
+      - KAFKA_NODE_ID=3
+
+      # This node runs both the broker role and the controller role.
+      - KAFKA_PROCESS_ROLES=broker,controller
+
+      # The listener name used by the KRaft controller quorum.
+      - KAFKA_CONTROLLER_LISTENER_NAMES=CONTROLLER
+
+      # Internal, controller, and external listeners.
+      - KAFKA_LISTENERS=DOCKER://0.0.0.0:9092,CONTROLLER://0.0.0.0:9093,HOST://0.0.0.0:9094
+
+      # Advertised addresses for Docker-network and host-machine clients.
+      - KAFKA_ADVERTISED_LISTENERS=DOCKER://kafka-3:9092,HOST://localhost:9096
+
+      # Listener protocol mapping.
+      - KAFKA_LISTENER_SECURITY_PROTOCOL_MAP=CONTROLLER:PLAINTEXT,DOCKER:PLAINTEXT,HOST:PLAINTEXT
+
+      # Inter-broker communication stays on the Docker network.
+      - KAFKA_INTER_BROKER_LISTENER_NAME=DOCKER
+
+      # Shared three-node KRaft controller quorum.
+      - KAFKA_CONTROLLER_QUORUM_VOTERS=1@kafka-1:9093,2@kafka-2:9093,3@kafka-3:9093
+
+      # Shared cluster ID for all nodes.
+      - KAFKA_CLUSTER_ID=abcdefghijklmnopqrstuv
+
+      # Disable automatic topic creation.
+      - KAFKA_AUTO_CREATE_TOPICS_ENABLE=false
+
+      # Internal topic durability settings for a 3-node cluster.
+      - KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR=3
+      - KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR=3
+      - KAFKA_TRANSACTION_STATE_LOG_MIN_ISR=2
+      - KAFKA_DEFAULT_REPLICATION_FACTOR=3
+      - KAFKA_MIN_INSYNC_REPLICAS=2
+
+      # Allow plaintext listeners for local development.
+      - KAFKA_ALLOW_PLAINTEXT_LISTENER=true
+
+    volumes:
+      # Persist Kafka broker data for node 3.
+      - kafka_3_:/var/lib/kafka/data
+
+  kafka-ui:
+    # Web UI for browsing topics, messages, partitions, and consumer groups.
+    image: provectuslabs/kafka-ui:latest
+    container_name: kafka-ui
+    hostname: kafka-ui
+    depends_on:
+      - kafka-1
+      - kafka-2
+      - kafka-3
+    ports:
+      # Open the UI on http://localhost:8078
+      - "8078:8080"
+    environment:
+      # Friendly cluster name shown in the UI.
+      - KAFKA_CLUSTERS_0_NAME=local-kraft
+
+      # Kafka UI runs inside Docker, so it should use internal Docker listener addresses.
+      - KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS=kafka-1:9092,kafka-2:9092,kafka-3:9092
+
+      # Enable dynamic configuration support in the UI.
+      - DYNAMIC_CONFIG_ENABLED=true
+
+  akhq:
+    # AKHQ as a second Kafka web UI.
+    image: tchiotludo/akhq:latest
+    container_name: akhq
+    hostname: akhq
+    depends_on:
+      - kafka-1
+      - kafka-2
+      - kafka-3
+    ports:
+      # AKHQ available at http://localhost:8079
+      - "8079:8080"
+    environment:
+      # Inline AKHQ YAML configuration.
+      # AKHQ supports full config via AKHQ_CONFIGURATION.
+      AKHQ_CONFIGURATION: |
+        akhq:
+          connections:
+            local-kraft:
+              properties:
+                bootstrap.servers: "kafka-1:9092,kafka-2:9092,kafka-3:9092"
+
+  kafka-init:
+    # One-shot helper container that creates the Accounts topic after startup.
+    image: apache/kafka:4.2.0
+    container_name: kafka-init
+    depends_on:
+      - kafka-1
+      - kafka-2
+      - kafka-3
+    entrypoint: ["/bin/bash", "-c"]
+    command: >
+      "
+      echo 'Waiting for Kafka cluster to be ready...';
+      sleep 20;
+      /opt/kafka/bin/kafka-topics.sh
+      --bootstrap-server kafka-1:9092
+      --create
+      --if-not-exists
+      --topic Accounts
+      --partitions 3
+      --replication-factor 3;
+      echo 'Accounts topic created (or already existed).'
+      "
+
+volumes:
+  kafka_1_:
+  kafka_2_:
+  kafka_3_:
