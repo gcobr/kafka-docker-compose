@@ -59,6 +59,29 @@ docker-compose down -v
 ### Accessing the UI
 Open your browser and navigate to http://localhost:8078 to access the Kafka UI or http://localhost:8079 for AKHQ.
 
+## Introspection Utility
+This project includes a Python-based introspection utility in the `instrospection` folder. It connects to the local Kafka brokers and generates a Markdown report with broker metadata, topic partition details, and broker configuration.
+
+To use it:
+1. Create a Python virtual environment in the project root:
+   ```bash
+   python3 -m venv .venv
+   ```
+2. Activate the virtual environment:
+   ```bash
+   . .venv/bin/activate
+   ```
+3. Install the Python dependencies:
+   ```bash
+   pip install -r requirements.txt
+   ```
+4. Run the introspection script:
+   ```bash
+   python instrospection/introspection.py
+   ```
+
+The report is written to [instrospection/kafka-introspection-report.md](./instrospection/kafka-introspection-report.md).
+
 ## Configuration Notes
 
 - **KRaft Mode**: This setup uses Apache Kafka's KRaft (Kafka Raft) metadata mode, eliminating the need for Zookeeper.
