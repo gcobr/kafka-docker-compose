@@ -1,0 +1,4 @@
+name: Docker Compose
+variables:
+  - name: baseUrl
+    value: http://localhost:8079/

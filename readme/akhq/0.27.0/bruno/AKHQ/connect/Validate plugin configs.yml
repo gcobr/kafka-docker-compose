@@ -1,0 +1,86 @@
+info:
+  name: Validate plugin configs
+  type: http
+  seq: 5
+  tags:
+    - connect
+
+http:
+  method: PUT
+  url: "{{baseUrl}}/api/:cluster/connect/:connectId/plugins/:type/validate"
+  params:
+    - name: cluster
+      value: ""
+      type: path
+    - name: connectId
+      value: ""
+      type: path
+    - name: type
+      value: ""
+      type: path
+  body:
+    type: json
+    data: |-
+      {
+        "configs": {}
+      }
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+
+examples:
+  - name: 200 Response
+    description: validatePlugin 200 response
+    request:
+      url: "{{baseUrl}}/api/:cluster/connect/:connectId/plugins/:type/validate"
+      method: PUT
+      params:
+        - name: cluster
+          value: ""
+          type: path
+        - name: connectId
+          value: ""
+          type: path
+        - name: type
+          value: ""
+          type: path
+      body:
+        type: json
+        data: |-
+          {
+            "configs": {}
+          }
+    response:
+      status: 200
+      statusText: OK
+      headers:
+        - name: Content-Type
+          value: application/json
+      body:
+        type: json
+        data: |-
+          {
+            "shortClassName": "",
+            "className": "",
+            "type": "",
+            "version": "",
+            "definitions": [
+              {
+                "name": "",
+                "type": "",
+                "required": false,
+                "defaultValue": "",
+                "importance": "",
+                "documentation": "",
+                "group": "",
+                "width": "",
+                "displayName": "",
+                "dependents": [],
+                "order": 0
+              }
+            ]
+          }

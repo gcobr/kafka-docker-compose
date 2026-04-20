@@ -1,0 +1,88 @@
+info:
+  name: List all connect definitions
+  type: http
+  seq: 1
+  tags:
+    - connect
+
+http:
+  method: GET
+  url: "{{baseUrl}}/api/:cluster/connect/:connectId"
+  params:
+    - name: cluster
+      value: ""
+      type: path
+    - name: connectId
+      value: ""
+      type: path
+    - name: search
+      value: ""
+      type: query
+      disabled: true
+    - name: page
+      value: ""
+      type: query
+      disabled: true
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+
+examples:
+  - name: 200 Response
+    description: list_2 200 response
+    request:
+      url: "{{baseUrl}}/api/:cluster/connect/:connectId"
+      method: GET
+      params:
+        - name: cluster
+          value: ""
+          type: path
+        - name: connectId
+          value: ""
+          type: path
+        - name: search
+          value: ""
+          type: query
+          disabled: true
+        - name: page
+          value: ""
+          type: query
+          disabled: true
+    response:
+      status: 200
+      statusText: OK
+      headers:
+        - name: Content-Type
+          value: application/json
+      body:
+        type: json
+        data: |-
+          {
+            "results": [
+              {
+                "shortClassName": "",
+                "paused": false,
+                "name": "",
+                "type": "",
+                "configs": {},
+                "tasks": [
+                  {
+                    "connector": "",
+                    "id": 0,
+                    "state": "",
+                    "workerId": "",
+                    "trace": ""
+                  }
+                ]
+              }
+            ],
+            "before": "",
+            "after": "",
+            "page": 0,
+            "total": 0,
+            "pageSize": 0
+          }

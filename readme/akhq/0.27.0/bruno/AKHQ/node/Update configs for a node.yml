@@ -1,0 +1,76 @@
+info:
+  name: Update configs for a node
+  type: http
+  seq: 4
+  tags:
+    - node
+
+http:
+  method: POST
+  url: "{{baseUrl}}/api/:cluster/node/:nodeId/configs"
+  params:
+    - name: cluster
+      value: ""
+      type: path
+    - name: nodeId
+      value: ""
+      type: path
+  body:
+    type: json
+    data: |-
+      {
+        "configs": {}
+      }
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+
+examples:
+  - name: 200 Response
+    description: nodeConfigUpdate 200 response
+    request:
+      url: "{{baseUrl}}/api/:cluster/node/:nodeId/configs"
+      method: POST
+      params:
+        - name: cluster
+          value: ""
+          type: path
+        - name: nodeId
+          value: ""
+          type: path
+      body:
+        type: json
+        data: |-
+          {
+            "configs": {}
+          }
+    response:
+      status: 200
+      statusText: OK
+      headers:
+        - name: Content-Type
+          value: application/json
+      body:
+        type: json
+        data: |-
+          [
+            {
+              "name": "",
+              "value": "",
+              "description": "",
+              "source": "DYNAMIC_TOPIC_CONFIG",
+              "sensitive": false,
+              "readOnly": false,
+              "synonyms": [
+                {
+                  "name": "",
+                  "value": "",
+                  "source": "DYNAMIC_TOPIC_CONFIG"
+                }
+              ]
+            }
+          ]

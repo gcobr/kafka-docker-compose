@@ -1,0 +1,141 @@
+info:
+  name: Produce data to a topic
+  type: http
+  seq: 4
+  tags:
+    - topic_data
+
+http:
+  method: POST
+  url: "{{baseUrl}}/api/:cluster/topic/:topicName/data"
+  params:
+    - name: cluster
+      value: ""
+      type: path
+    - name: topicName
+      value: ""
+      type: path
+  body:
+    type: json
+    data: |-
+      {
+        "value": "",
+        "key": "",
+        "partition": 0,
+        "timestamp": "",
+        "headers": [
+          {
+            "key": "",
+            "value": ""
+          }
+        ],
+        "keySchema": "",
+        "valueSchema": "",
+        "multiMessage": false,
+        "keyValueSeparator": ""
+      }
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+
+examples:
+  - name: 200 Response
+    description: produce 200 response
+    request:
+      url: "{{baseUrl}}/api/:cluster/topic/:topicName/data"
+      method: POST
+      params:
+        - name: cluster
+          value: ""
+          type: path
+        - name: topicName
+          value: ""
+          type: path
+      body:
+        type: json
+        data: |-
+          {
+            "value": "",
+            "key": "",
+            "partition": 0,
+            "timestamp": "",
+            "headers": [
+              {
+                "key": "",
+                "value": ""
+              }
+            ],
+            "keySchema": "",
+            "valueSchema": "",
+            "multiMessage": false,
+            "keyValueSeparator": ""
+          }
+    response:
+      status: 200
+      statusText: OK
+      headers:
+        - name: Content-Type
+          value: application/json
+      body:
+        type: json
+        data: |-
+          [
+            {
+              "key": "",
+              "value": "",
+              "topic": {
+                "internalTopic": false,
+                "streamTopic": false,
+                "replicaCount": 0,
+                "inSyncReplicaCount": 0,
+                "logDir": [
+                  {
+                    "brokerId": 0,
+                    "path": "",
+                    "topic": "",
+                    "partition": 0,
+                    "size": 0,
+                    "offsetLag": 0,
+                    "future": false
+                  }
+                ],
+                "logDirSize": 0,
+                "size": 0,
+                "name": "",
+                "internal": false,
+                "partitions": [
+                  {
+                    "leader": {},
+                    "logDirSize": 0,
+                    "id": 0,
+                    "topic": "",
+                    "nodes": [
+                      {}
+                    ],
+                    "logDir": [
+                      {}
+                    ],
+                    "firstOffset": 0,
+                    "lastOffset": 0
+                  }
+                ]
+              },
+              "partition": 0,
+              "offset": 0,
+              "timestamp": "",
+              "keySchemaId": "",
+              "keySubject": "",
+              "valueSchemaId": "",
+              "valueSubject": "",
+              "headers": [
+                {
+                  "key": "",
+                  "value": ""
+                }
+              ]
+            }
+          ]

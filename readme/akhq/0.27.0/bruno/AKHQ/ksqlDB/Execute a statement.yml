@@ -1,0 +1,59 @@
+info:
+  name: Execute a statement
+  type: http
+  seq: 1
+  tags:
+    - ksqlDB
+
+http:
+  method: PUT
+  url: "{{baseUrl}}/api/:cluster/ksqldb/:ksqlDbId/execute"
+  params:
+    - name: cluster
+      value: ""
+      type: path
+    - name: ksqlDbId
+      value: ""
+      type: path
+  body:
+    type: json
+    data: |-
+      {
+        "sql": ""
+      }
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+
+examples:
+  - name: 200 Response
+    description: executeStatement 200 response
+    request:
+      url: "{{baseUrl}}/api/:cluster/ksqldb/:ksqlDbId/execute"
+      method: PUT
+      params:
+        - name: cluster
+          value: ""
+          type: path
+        - name: ksqlDbId
+          value: ""
+          type: path
+      body:
+        type: json
+        data: |-
+          {
+            "sql": ""
+          }
+    response:
+      status: 200
+      statusText: OK
+      headers:
+        - name: Content-Type
+          value: application/json
+      body:
+        type: json
+        data: ""

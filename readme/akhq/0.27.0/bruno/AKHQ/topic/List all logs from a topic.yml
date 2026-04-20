@@ -1,0 +1,58 @@
+info:
+  name: List all logs from a topic
+  type: http
+  seq: 13
+  tags:
+    - topic
+
+http:
+  method: GET
+  url: "{{baseUrl}}/api/:cluster/topic/:topicName/logs"
+  params:
+    - name: cluster
+      value: ""
+      type: path
+    - name: topicName
+      value: ""
+      type: path
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+
+examples:
+  - name: 200 Response
+    description: logs 200 response
+    request:
+      url: "{{baseUrl}}/api/:cluster/topic/:topicName/logs"
+      method: GET
+      params:
+        - name: cluster
+          value: ""
+          type: path
+        - name: topicName
+          value: ""
+          type: path
+    response:
+      status: 200
+      statusText: OK
+      headers:
+        - name: Content-Type
+          value: application/json
+      body:
+        type: json
+        data: |-
+          [
+            {
+              "brokerId": 0,
+              "path": "",
+              "topic": "",
+              "partition": 0,
+              "size": 0,
+              "offsetLag": 0,
+              "future": false
+            }
+          ]

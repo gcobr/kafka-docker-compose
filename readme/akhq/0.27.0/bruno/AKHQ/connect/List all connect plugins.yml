@@ -1,0 +1,70 @@
+info:
+  name: List all connect plugins
+  type: http
+  seq: 3
+  tags:
+    - connect
+
+http:
+  method: GET
+  url: "{{baseUrl}}/api/:cluster/connect/:connectId/plugins"
+  params:
+    - name: cluster
+      value: ""
+      type: path
+    - name: connectId
+      value: ""
+      type: path
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+
+examples:
+  - name: 200 Response
+    description: pluginsList 200 response
+    request:
+      url: "{{baseUrl}}/api/:cluster/connect/:connectId/plugins"
+      method: GET
+      params:
+        - name: cluster
+          value: ""
+          type: path
+        - name: connectId
+          value: ""
+          type: path
+    response:
+      status: 200
+      statusText: OK
+      headers:
+        - name: Content-Type
+          value: application/json
+      body:
+        type: json
+        data: |-
+          [
+            {
+              "shortClassName": "",
+              "className": "",
+              "type": "",
+              "version": "",
+              "definitions": [
+                {
+                  "name": "",
+                  "type": "",
+                  "required": false,
+                  "defaultValue": "",
+                  "importance": "",
+                  "documentation": "",
+                  "group": "",
+                  "width": "",
+                  "displayName": "",
+                  "dependents": [],
+                  "order": 0
+                }
+              ]
+            }
+          ]

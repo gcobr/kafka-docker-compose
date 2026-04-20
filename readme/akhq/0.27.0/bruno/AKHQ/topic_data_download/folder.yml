@@ -1,0 +1,7 @@
+info:
+  name: topic_data_download
+  type: folder
+  seq: 1
+
+request:
+  auth: inherit

@@ -1,0 +1,59 @@
+info:
+  name: Restart a connect task
+  type: http
+  seq: 14
+  tags:
+    - connect
+
+http:
+  method: GET
+  url: "{{baseUrl}}/api/:cluster/connect/:connectId/:name/tasks/:taskId/restart"
+  params:
+    - name: cluster
+      value: ""
+      type: path
+    - name: connectId
+      value: ""
+      type: path
+    - name: name
+      value: ""
+      type: path
+    - name: taskId
+      value: ""
+      type: path
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+
+examples:
+  - name: 200 Response
+    description: taskRestart 200 response
+    request:
+      url: "{{baseUrl}}/api/:cluster/connect/:connectId/:name/tasks/:taskId/restart"
+      method: GET
+      params:
+        - name: cluster
+          value: ""
+          type: path
+        - name: connectId
+          value: ""
+          type: path
+        - name: name
+          value: ""
+          type: path
+        - name: taskId
+          value: ""
+          type: path
+    response:
+      status: 200
+      statusText: OK
+      headers:
+        - name: Content-Type
+          value: application/json
+      body:
+        type: json
+        data: "{}"

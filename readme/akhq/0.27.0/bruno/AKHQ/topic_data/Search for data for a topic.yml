@@ -1,0 +1,201 @@
+info:
+  name: Search for data for a topic
+  type: http
+  seq: 8
+  tags:
+    - topic_data
+
+http:
+  method: GET
+  url: "{{baseUrl}}/api/:cluster/topic/:topicName/data/search"
+  params:
+    - name: cluster
+      value: ""
+      type: path
+    - name: topicName
+      value: ""
+      type: path
+    - name: after
+      value: ""
+      type: query
+      disabled: true
+    - name: partition
+      value: ""
+      type: query
+      disabled: true
+    - name: sort
+      value: ""
+      type: query
+      disabled: true
+    - name: timestamp
+      value: ""
+      type: query
+      disabled: true
+    - name: endTimestamp
+      value: ""
+      type: query
+      disabled: true
+    - name: searchByKey
+      value: ""
+      type: query
+      disabled: true
+    - name: searchByValue
+      value: ""
+      type: query
+      disabled: true
+    - name: searchByHeaderKey
+      value: ""
+      type: query
+      disabled: true
+    - name: searchByHeaderValue
+      value: ""
+      type: query
+      disabled: true
+    - name: searchByKeySubject
+      value: ""
+      type: query
+      disabled: true
+    - name: searchByValueSubject
+      value: ""
+      type: query
+      disabled: true
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+
+examples:
+  - name: 200 Response
+    description: sse_1 200 response
+    request:
+      url: "{{baseUrl}}/api/:cluster/topic/:topicName/data/search"
+      method: GET
+      params:
+        - name: cluster
+          value: ""
+          type: path
+        - name: topicName
+          value: ""
+          type: path
+        - name: after
+          value: ""
+          type: query
+          disabled: true
+        - name: partition
+          value: ""
+          type: query
+          disabled: true
+        - name: sort
+          value: ""
+          type: query
+          disabled: true
+        - name: timestamp
+          value: ""
+          type: query
+          disabled: true
+        - name: endTimestamp
+          value: ""
+          type: query
+          disabled: true
+        - name: searchByKey
+          value: ""
+          type: query
+          disabled: true
+        - name: searchByValue
+          value: ""
+          type: query
+          disabled: true
+        - name: searchByHeaderKey
+          value: ""
+          type: query
+          disabled: true
+        - name: searchByHeaderValue
+          value: ""
+          type: query
+          disabled: true
+        - name: searchByKeySubject
+          value: ""
+          type: query
+          disabled: true
+        - name: searchByValueSubject
+          value: ""
+          type: query
+          disabled: true
+    response:
+      status: 200
+      statusText: OK
+      headers:
+        - name: Content-Type
+          value: text/event-stream
+      body:
+        type: text
+        data: |-
+          {
+            "data": {
+              "percent": 0,
+              "records": [
+                {
+                  "key": "",
+                  "value": "",
+                  "topic": {
+                    "internalTopic": false,
+                    "streamTopic": false,
+                    "replicaCount": 0,
+                    "inSyncReplicaCount": 0,
+                    "logDir": [
+                      {
+                        "brokerId": 0,
+                        "path": "",
+                        "topic": "",
+                        "partition": 0,
+                        "size": 0,
+                        "offsetLag": 0,
+                        "future": false
+                      }
+                    ],
+                    "logDirSize": 0,
+                    "size": 0,
+                    "name": "",
+                    "internal": false,
+                    "partitions": [
+                      {
+                        "leader": {},
+                        "logDirSize": 0,
+                        "id": 0,
+                        "topic": "",
+                        "nodes": [
+                          {}
+                        ],
+                        "logDir": [
+                          {}
+                        ],
+                        "firstOffset": 0,
+                        "lastOffset": 0
+                      }
+                    ]
+                  },
+                  "partition": 0,
+                  "offset": 0,
+                  "timestamp": "",
+                  "keySchemaId": "",
+                  "keySubject": "",
+                  "valueSchemaId": "",
+                  "valueSubject": "",
+                  "headers": [
+                    {
+                      "key": "",
+                      "value": ""
+                    }
+                  ]
+                }
+              ],
+              "after": ""
+            },
+            "id": "",
+            "name": "",
+            "comment": "",
+            "retry": ""
+          }

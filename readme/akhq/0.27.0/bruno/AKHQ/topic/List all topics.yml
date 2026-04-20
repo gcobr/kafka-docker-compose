@@ -1,0 +1,119 @@
+info:
+  name: List all topics
+  type: http
+  seq: 3
+  tags:
+    - topic
+
+http:
+  method: GET
+  url: "{{baseUrl}}/api/:cluster/topic"
+  params:
+    - name: cluster
+      value: ""
+      type: path
+    - name: search
+      value: ""
+      type: query
+      disabled: true
+    - name: show
+      value: ""
+      type: query
+      disabled: true
+    - name: page
+      value: ""
+      type: query
+      disabled: true
+    - name: uiPageSize
+      value: ""
+      type: query
+      disabled: true
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+
+examples:
+  - name: 200 Response
+    description: list_6 200 response
+    request:
+      url: "{{baseUrl}}/api/:cluster/topic"
+      method: GET
+      params:
+        - name: cluster
+          value: ""
+          type: path
+        - name: search
+          value: ""
+          type: query
+          disabled: true
+        - name: show
+          value: ""
+          type: query
+          disabled: true
+        - name: page
+          value: ""
+          type: query
+          disabled: true
+        - name: uiPageSize
+          value: ""
+          type: query
+          disabled: true
+    response:
+      status: 200
+      statusText: OK
+      headers:
+        - name: Content-Type
+          value: application/json
+      body:
+        type: json
+        data: |-
+          {
+            "results": [
+              {
+                "internalTopic": false,
+                "streamTopic": false,
+                "replicaCount": 0,
+                "inSyncReplicaCount": 0,
+                "logDir": [
+                  {
+                    "brokerId": 0,
+                    "path": "",
+                    "topic": "",
+                    "partition": 0,
+                    "size": 0,
+                    "offsetLag": 0,
+                    "future": false
+                  }
+                ],
+                "logDirSize": 0,
+                "size": 0,
+                "name": "",
+                "internal": false,
+                "partitions": [
+                  {
+                    "leader": {},
+                    "logDirSize": 0,
+                    "id": 0,
+                    "topic": "",
+                    "nodes": [
+                      {}
+                    ],
+                    "logDir": [
+                      {}
+                    ],
+                    "firstOffset": 0,
+                    "lastOffset": 0
+                  }
+                ]
+              }
+            ],
+            "before": "",
+            "after": "",
+            "page": 0,
+            "total": 0,
+            "pageSize": 0
+          }

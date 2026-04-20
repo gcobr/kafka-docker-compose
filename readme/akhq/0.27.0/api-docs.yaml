@@ -1,0 +1,3488 @@
+openapi: 3.0.1
+info:
+  title: AKHQ
+  license:
+    name: Apache 2.0
+    url: https://raw.githubusercontent.com/tchiotludo/akhq/master/LICENSE
+  version: 1.0.0
+tags:
+- name: AKHQ
+  description: AKHQ api
+- name: node
+  description: Kafka Node api
+- name: topic
+  description: Kafka Topic api
+- name: topic data
+  description: Kafka Topic data api
+- name: consumer group
+  description: Kafka Consumer group api
+- name: schema registry
+  description: Kafka Schema registry api
+- name: connect
+  description: Kafka Connect api
+- name: acls
+  description: Kafka Acls api
+paths:
+  /api/auths:
+    get:
+      tags:
+      - AKHQ
+      summary: Get all auth details for current instance
+      operationId: auths
+      responses:
+        "200":
+          description: auths 200 response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AkhqController.AuthDefinition"
+  /api/cluster:
+    get:
+      tags:
+      - AKHQ
+      summary: Get all clusters for current instance
+      operationId: list
+      responses:
+        "200":
+          description: list 200 response
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/AkhqController.ClusterDefinition"
+  /api/me:
+    get:
+      tags:
+      - AKHQ
+      summary: Get current user
+      operationId: users
+      responses:
+        "200":
+          description: users 200 response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AkhqController.AuthUser"
+  /api/topic/defaults-configs:
+    get:
+      tags:
+      - topic
+      summary: Get default topic configuration
+      operationId: getDefaultConf
+      responses:
+        "200":
+          description: getDefaultConf 200 response
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties:
+                  type: object
+  /api/{cluster}/acls:
+    get:
+      tags:
+      - acls
+      summary: List all acls
+      operationId: list_1
+      parameters:
+      - name: cluster
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: search
+        in: query
+        explode: false
+        schema:
+          type: string
+          nullable: true
+      responses:
+        "200":
+          description: list_1 200 response
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/AccessControl"
+  /api/{cluster}/acls/{principal}:
+    get:
+      tags:
+      - acls
+      summary: Get acls for a principal
+      operationId: principal
+      parameters:
+      - name: cluster
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: principal
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: resourceType
+        in: query
+        explode: false
+        schema:
+          nullable: true
+          allOf:
+          - $ref: "#/components/schemas/ResourceType"
+      responses:
+        "200":
+          description: principal 200 response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AccessControl"
+  /api/{cluster}/connect/{connectId}:
+    get:
+      tags:
+      - connect
+      summary: List all connect definitions
+      operationId: list_2
+      parameters:
+      - name: cluster
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: connectId
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: search
+        in: query
+        explode: false
+        schema:
+          type: string
+          nullable: true
+      - name: page
+        in: query
+        explode: false
+        schema:
+          type: integer
+          format: int32
+          nullable: true
+      responses:
+        "200":
+          description: list_2 200 response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ResultPagedList_ConnectDefinition_"
+    post:
+      tags:
+      - connect
+      summary: Create a new connect definition
+      operationId: create
+      parameters:
+      - name: cluster
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: connectId
+        in: path
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                configs:
+                  type: object
+                  additionalProperties:
+                    type: string
+        required: true
+      responses:
+        "200":
+          description: create 200 response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ConnectDefinition"
+  /api/{cluster}/connect/{connectId}/plugins:
+    get:
+      tags:
+      - connect
+      summary: List all connect plugins
+      operationId: pluginsList
+      parameters:
+      - name: cluster
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: connectId
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          description: pluginsList 200 response
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/ConnectPlugin"
+  /api/{cluster}/connect/{connectId}/plugins/{type}:
+    get:
+      tags:
+      - connect
+      summary: Retrieve a connect plugin
+      operationId: plugins
+      parameters:
+      - name: cluster
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: connectId
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: type
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          description: plugins 200 response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ConnectPlugin"
+  /api/{cluster}/connect/{connectId}/plugins/{type}/validate:
+    put:
+      tags:
+      - connect
+      summary: Validate plugin configs
+      operationId: validatePlugin
+      parameters:
+      - name: cluster
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: connectId
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: type
+        in: path
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                configs:
+                  type: object
+                  additionalProperties:
+                    type: string
+        required: true
+      responses:
+        "200":
+          description: validatePlugin 200 response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ConnectPlugin"
+  /api/{cluster}/connect/{connectId}/{name}:
+    get:
+      tags:
+      - connect
+      summary: Retrieve a connect definition
+      operationId: home
+      parameters:
+      - name: cluster
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: connectId
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: name
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          description: home 200 response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ConnectDefinition"
+    delete:
+      tags:
+      - connect
+      summary: Delete a connect definition
+      operationId: delete
+      parameters:
+      - name: cluster
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: connectId
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: name
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          description: delete 200 response
+          content:
+            application/json:
+              schema:
+                type: object
+  /api/{cluster}/connect/{connectId}/{name}/configs:
+    get:
+      tags:
+      - connect
+      summary: Retrieve a connect config
+      operationId: configs
+      parameters:
+      - name: cluster
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: connectId
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: name
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          description: configs 200 response
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties:
+                  type: string
+    post:
+      tags:
+      - connect
+      summary: Update a connect definition config
+      operationId: update
+      parameters:
+      - name: cluster
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: connectId
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: name
+        in: path
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                configs:
+                  type: object
+                  additionalProperties:
+                    type: string
+        required: true
+      responses:
+        "200":
+          description: update 200 response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ConnectDefinition"
+  /api/{cluster}/connect/{connectId}/{name}/pause:
+    get:
+      tags:
+      - connect
+      summary: Pause a connect definition
+      operationId: definitionPause
+      parameters:
+      - name: cluster
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: connectId
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: name
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          description: definitionPause 200 response
+          content:
+            application/json:
+              schema:
+                type: object
+  /api/{cluster}/connect/{connectId}/{name}/restart:
+    get:
+      tags:
+      - connect
+      summary: Restart a connect definition
+      operationId: definitionRestart
+      parameters:
+      - name: cluster
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: connectId
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: name
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          description: definitionRestart 200 response
+          content:
+            application/json:
+              schema:
+                type: object
+  /api/{cluster}/connect/{connectId}/{name}/resume:
+    get:
+      tags:
+      - connect
+      summary: Resume a connect definition
+      operationId: definitionResume
+      parameters:
+      - name: cluster
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: connectId
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: name
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          description: definitionResume 200 response
+          content:
+            application/json:
+              schema:
+                type: object
+  /api/{cluster}/connect/{connectId}/{name}/tasks:
+    get:
+      tags:
+      - connect
+      summary: Retrieve a connect task
+      operationId: tasks
+      parameters:
+      - name: cluster
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: connectId
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: name
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          description: tasks 200 response
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/ConnectDefinition.TaskDefinition"
+  /api/{cluster}/connect/{connectId}/{name}/tasks/{taskId}/restart:
+    get:
+      tags:
+      - connect
+      summary: Restart a connect task
+      operationId: taskRestart
+      parameters:
+      - name: cluster
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: connectId
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: name
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: taskId
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int32
+      responses:
+        "200":
+          description: taskRestart 200 response
+          content:
+            application/json:
+              schema:
+                type: object
+  /api/{cluster}/group:
+    get:
+      tags:
+      - consumer group
+      summary: List all consumer groups
+      operationId: list_3
+      parameters:
+      - name: cluster
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: search
+        in: query
+        explode: false
+        schema:
+          type: string
+          nullable: true
+      - name: page
+        in: query
+        explode: false
+        schema:
+          type: integer
+          format: int32
+          nullable: true
+      responses:
+        "200":
+          description: list_3 200 response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ResultPagedList_ConsumerGroup_"
+  /api/{cluster}/group/topics:
+    get:
+      tags:
+      - consumer group
+      summary: Retrieve consumer group for list of topics
+      operationId: filterByTopics
+      parameters:
+      - name: cluster
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: topics
+        in: query
+        explode: false
+        schema:
+          type: array
+          nullable: true
+          items:
+            type: string
+      - name: groupsListView
+        in: query
+        explode: false
+        schema:
+          nullable: true
+          allOf:
+          - $ref: "#/components/schemas/TopicRepository.TopicGroupsListView"
+      responses:
+        "200":
+          description: filterByTopics 200 response
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+  /api/{cluster}/group/{groupName}:
+    get:
+      tags:
+      - consumer group
+      summary: Retrieve a consumer group
+      operationId: home_1
+      parameters:
+      - name: cluster
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: groupName
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          description: home_1 200 response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ConsumerGroup"
+    delete:
+      tags:
+      - consumer group
+      summary: Delete a consumer group
+      operationId: delete_1
+      parameters:
+      - name: cluster
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: groupName
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          description: delete_1 200 response
+          content:
+            application/json:
+              schema:
+                type: object
+  /api/{cluster}/group/{groupName}/acls:
+    get:
+      tags:
+      - consumer group
+      summary: Retrieve consumer group acls
+      operationId: acls
+      parameters:
+      - name: cluster
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: groupName
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          description: acls 200 response
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/AccessControl"
+  /api/{cluster}/group/{groupName}/members:
+    get:
+      tags:
+      - consumer group
+      summary: Retrieve consumer group members
+      operationId: members
+      parameters:
+      - name: cluster
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: groupName
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          description: members 200 response
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Consumer"
+  /api/{cluster}/group/{groupName}/offsets:
+    get:
+      tags:
+      - consumer group
+      summary: Retrieve consumer group offsets
+      operationId: offsets
+      parameters:
+      - name: cluster
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: groupName
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          description: offsets 200 response
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/TopicPartition.ConsumerGroupOffset"
+    post:
+      tags:
+      - consumer group
+      summary: Update consumer group offsets
+      operationId: offsets_1
+      parameters:
+      - name: cluster
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: groupName
+        in: path
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: "#/components/schemas/GroupController.OffsetsUpdate"
+        required: true
+      responses:
+        "200":
+          description: offsets_1 200 response
+          content:
+            application/json:
+              schema:
+                type: object
+  /api/{cluster}/group/{groupName}/offsets/start:
+    get:
+      tags:
+      - consumer group
+      summary: Retrive consumer group offsets by timestamp
+      operationId: offsetsStart
+      parameters:
+      - name: cluster
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: groupName
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: timestamp
+        in: query
+        required: true
+        explode: false
+        schema:
+          type: string
+          format: date-time
+      responses:
+        "200":
+          description: offsetsStart 200 response
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/RecordRepository.TimeOffset"
+  /api/{cluster}/group/{groupName}/topic/{topicName}:
+    delete:
+      tags:
+      - consumer group
+      summary: Delete consumer group offsets for the given topic
+      operationId: deleteConsumerGroupOffsets
+      parameters:
+      - name: cluster
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: groupName
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: topicName
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          description: deleteConsumerGroupOffsets 200 response
+          content:
+            application/json:
+              schema:
+                type: object
+  /api/{cluster}/ksqldb/{ksqlDbId}/execute:
+    put:
+      tags:
+      - ksqlDB
+      summary: Execute a statement
+      operationId: executeStatement
+      parameters:
+      - name: cluster
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: ksqlDbId
+        in: path
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                sql:
+                  type: string
+        required: true
+      responses:
+        "200":
+          description: executeStatement 200 response
+          content:
+            application/json:
+              schema:
+                type: string
+  /api/{cluster}/ksqldb/{ksqlDbId}/info:
+    get:
+      tags:
+      - ksqlDB
+      summary: Retrieve server info
+      operationId: info
+      parameters:
+      - name: cluster
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: ksqlDbId
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          description: info 200 response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/KsqlDbServerInfo"
+  /api/{cluster}/ksqldb/{ksqlDbId}/queries:
+    get:
+      tags:
+      - ksqlDB
+      summary: List all queries
+      operationId: listQueries
+      parameters:
+      - name: cluster
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: ksqlDbId
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: search
+        in: query
+        explode: false
+        schema:
+          type: string
+          nullable: true
+      - name: page
+        in: query
+        explode: false
+        schema:
+          type: integer
+          format: int32
+          nullable: true
+      responses:
+        "200":
+          description: listQueries 200 response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ResultPagedList_KsqlDbQuery_"
+  /api/{cluster}/ksqldb/{ksqlDbId}/queries/pull:
+    put:
+      tags:
+      - ksqlDB
+      summary: Execute a query
+      operationId: pullQuery
+      parameters:
+      - name: cluster
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: ksqlDbId
+        in: path
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                sql:
+                  type: string
+                properties:
+                  type: object
+                  additionalProperties:
+                    type: string
+        required: true
+      responses:
+        "200":
+          description: pullQuery 200 response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/KsqlDbQueryResult"
+  /api/{cluster}/ksqldb/{ksqlDbId}/streams:
+    get:
+      tags:
+      - ksqlDB
+      summary: List all streams
+      operationId: listStreams
+      parameters:
+      - name: cluster
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: ksqlDbId
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: search
+        in: query
+        explode: false
+        schema:
+          type: string
+          nullable: true
+      - name: page
+        in: query
+        explode: false
+        schema:
+          type: integer
+          format: int32
+          nullable: true
+      responses:
+        "200":
+          description: listStreams 200 response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ResultPagedList_KsqlDbStream_"
+  /api/{cluster}/ksqldb/{ksqlDbId}/tables:
+    get:
+      tags:
+      - ksqlDB
+      summary: List all tables
+      operationId: listTables
+      parameters:
+      - name: cluster
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: ksqlDbId
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: search
+        in: query
+        explode: false
+        schema:
+          type: string
+          nullable: true
+      - name: page
+        in: query
+        explode: false
+        schema:
+          type: integer
+          format: int32
+          nullable: true
+      responses:
+        "200":
+          description: listTables 200 response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ResultPagedList_KsqlDbTable_"
+  /api/{cluster}/node:
+    get:
+      tags:
+      - node
+      summary: List all nodes
+      operationId: list_4
+      parameters:
+      - name: cluster
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          description: list_4 200 response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Cluster"
+  /api/{cluster}/node/partitions:
+    get:
+      tags:
+      - topic
+      summary: Partition counts
+      operationId: nodePartitions
+      parameters:
+      - name: cluster
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          description: nodePartitions 200 response
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/NodeController.NodePartition"
+  /api/{cluster}/node/{nodeId}:
+    get:
+      tags:
+      - node
+      summary: Retrieve a node
+      operationId: node
+      parameters:
+      - name: cluster
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: nodeId
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int32
+      responses:
+        "200":
+          description: node 200 response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Node"
+  /api/{cluster}/node/{nodeId}/configs:
+    get:
+      tags:
+      - node
+      summary: List all configs for a node
+      operationId: nodeConfig
+      parameters:
+      - name: cluster
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: nodeId
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int32
+      responses:
+        "200":
+          description: nodeConfig 200 response
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Config"
+    post:
+      tags:
+      - node
+      summary: Update configs for a node
+      operationId: nodeConfigUpdate
+      parameters:
+      - name: cluster
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: nodeId
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int32
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                configs:
+                  type: object
+                  additionalProperties:
+                    type: string
+        required: true
+      responses:
+        "200":
+          description: nodeConfigUpdate 200 response
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Config"
+  /api/{cluster}/node/{nodeId}/logs:
+    get:
+      tags:
+      - node
+      summary: List all logs for a node
+      operationId: nodeLog
+      parameters:
+      - name: cluster
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: nodeId
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int32
+      responses:
+        "200":
+          description: nodeLog 200 response
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/LogDir"
+  /api/{cluster}/schema:
+    get:
+      tags:
+      - schema registry
+      summary: List all schemas paginated
+      operationId: list_5
+      parameters:
+      - name: cluster
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: search
+        in: query
+        explode: false
+        schema:
+          type: string
+          nullable: true
+      - name: page
+        in: query
+        explode: false
+        schema:
+          type: integer
+          format: int32
+          nullable: true
+      responses:
+        "200":
+          description: list_5 200 response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ResultPagedList_Schema_"
+    post:
+      tags:
+      - schema registry
+      summary: Create a new schema
+      operationId: create_1
+      parameters:
+      - name: cluster
+        in: path
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Schema"
+        required: true
+      responses:
+        "200":
+          description: create_1 200 response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Schema"
+  /api/{cluster}/schema/id/{id}:
+    get:
+      tags:
+      - schema registry
+      summary: Find a subject by the schema id
+      description: "Find a subject by the schema id In case of several subjects matching\
+        \ the schema id, we use the topic name to get the most relevant subject that\
+        \ matches the topic name (TopicNameStrategy). If there is no topic or if the\
+        \ topic doesn't match any subject, return the first subject that matches the\
+        \ schema id."
+      operationId: getSubjectBySchemaIdAndTopic
+      parameters:
+      - name: cluster
+        in: path
+        description: '- The cluster name'
+        required: true
+        schema:
+          type: string
+      - name: id
+        in: path
+        description: '- The schema id'
+        required: true
+        schema:
+          type: integer
+          format: int32
+      - name: topic
+        in: query
+        description: '- (Optional) The topic name'
+        explode: false
+        schema:
+          type: string
+          nullable: true
+      responses:
+        "200":
+          description: the most relevant subject
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Schema"
+  /api/{cluster}/schema/topic/{topic}:
+    get:
+      tags:
+      - schema registry
+      summary: List all preferred schemas for a topic
+      operationId: listSchemaForTopic
+      parameters:
+      - name: cluster
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: topic
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          description: listSchemaForTopic 200 response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TopicSchema"
+  /api/{cluster}/schema/{subject}:
+    get:
+      tags:
+      - schema registry
+      summary: Retrieve a schema
+      operationId: home_2
+      parameters:
+      - name: cluster
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: subject
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          description: home_2 200 response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Schema"
+    post:
+      tags:
+      - schema registry
+      summary: Update a schema
+      operationId: updateSchema
+      parameters:
+      - name: cluster
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: subject
+        in: path
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Schema"
+        required: true
+      responses:
+        "200":
+          description: updateSchema 200 response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Schema"
+    delete:
+      tags:
+      - schema registry
+      summary: Delete a schema
+      operationId: delete_2
+      parameters:
+      - name: cluster
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: subject
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          description: delete_2 200 response
+          content:
+            application/json:
+              schema:
+                type: object
+  /api/{cluster}/schema/{subject}/version:
+    get:
+      tags:
+      - schema registry
+      summary: List all version for a schema
+      operationId: versions
+      parameters:
+      - name: cluster
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: subject
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          description: versions 200 response
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Schema"
+  /api/{cluster}/schema/{subject}/version/{version}:
+    delete:
+      tags:
+      - schema registry
+      summary: Delete a version for a schema
+      operationId: deleteVersion
+      parameters:
+      - name: cluster
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: subject
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: version
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int32
+      responses:
+        "200":
+          description: deleteVersion 200 response
+          content:
+            application/json:
+              schema:
+                type: object
+  /api/{cluster}/schemas:
+    get:
+      tags:
+      - schema registry
+      summary: List all schemas
+      operationId: listAll
+      parameters:
+      - name: cluster
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          description: listAll 200 response
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: string
+  /api/{cluster}/tail/sse:
+    get:
+      tags:
+      - topic data
+      summary: Tail for data on multiple topic
+      operationId: sse
+      parameters:
+      - name: cluster
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: topics
+        in: query
+        required: true
+        explode: false
+        schema:
+          type: array
+          items:
+            type: string
+      - name: search
+        in: query
+        explode: false
+        schema:
+          type: string
+          nullable: true
+      - name: after
+        in: query
+        explode: false
+        schema:
+          type: array
+          nullable: true
+          items:
+            type: string
+      responses:
+        "200":
+          description: sse 200 response
+          content:
+            text/event-stream:
+              schema:
+                $ref: "#/components/schemas/Event_TailController.TailRecord_"
+  /api/{cluster}/topic:
+    get:
+      tags:
+      - topic
+      summary: List all topics
+      operationId: list_6
+      parameters:
+      - name: cluster
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: search
+        in: query
+        explode: false
+        schema:
+          type: string
+          nullable: true
+      - name: show
+        in: query
+        explode: false
+        schema:
+          nullable: true
+          allOf:
+          - $ref: "#/components/schemas/TopicRepository.TopicListView"
+      - name: page
+        in: query
+        explode: false
+        schema:
+          type: integer
+          format: int32
+          nullable: true
+      - name: uiPageSize
+        in: query
+        explode: false
+        schema:
+          type: integer
+          format: int32
+          nullable: true
+      responses:
+        "200":
+          description: list_6 200 response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ResultPagedList_Topic_"
+    post:
+      tags:
+      - topic
+      summary: Create a topic
+      operationId: create_2
+      parameters:
+      - name: cluster
+        in: path
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                partition:
+                  type: integer
+                  format: int32
+                  nullable: true
+                replication:
+                  type: integer
+                  format: int32
+                  nullable: true
+                configs:
+                  type: object
+                  additionalProperties:
+                    type: string
+        required: true
+      responses:
+        "200":
+          description: create_2 200 response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Topic"
+  /api/{cluster}/topic/last-record:
+    get:
+      tags:
+      - topic
+      summary: Retrieve the last record for a list of topics
+      operationId: lastRecord
+      parameters:
+      - name: cluster
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: topics
+        in: query
+        required: true
+        explode: false
+        schema:
+          type: array
+          items:
+            type: string
+      responses:
+        "200":
+          description: lastRecord 200 response
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties:
+                  $ref: "#/components/schemas/Record"
+  /api/{cluster}/topic/name:
+    get:
+      tags:
+      - topic
+      summary: List all topics name
+      operationId: listTopicNames
+      parameters:
+      - name: cluster
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: show
+        in: query
+        explode: false
+        schema:
+          nullable: true
+          allOf:
+          - $ref: "#/components/schemas/TopicRepository.TopicListView"
+      responses:
+        "200":
+          description: listTopicNames 200 response
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: string
+  /api/{cluster}/topic/{fromTopicName}/copy/{toCluster}/topic/{toTopicName}:
+    post:
+      tags:
+      - topic data
+      summary: Copy from a topic to another topic
+      operationId: copy
+      parameters:
+      - name: cluster
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: fromTopicName
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: toCluster
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: toTopicName
+        in: path
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: "#/components/schemas/TopicController.OffsetCopy"
+        required: true
+      responses:
+        "200":
+          description: copy 200 response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RecordRepository.CopyResult"
+  /api/{cluster}/topic/{topicName}:
+    get:
+      tags:
+      - topic
+      summary: Retrieve a topic
+      operationId: home_3
+      parameters:
+      - name: cluster
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: topicName
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          description: home_3 200 response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Topic"
+    delete:
+      tags:
+      - topic
+      summary: Delete a topic
+      operationId: delete_3
+      parameters:
+      - name: cluster
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: topicName
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          description: delete_3 200 response
+          content:
+            application/json:
+              schema:
+                type: object
+  /api/{cluster}/topic/{topicName}/acls:
+    get:
+      tags:
+      - topic
+      summary: List all acls from a topic
+      operationId: acls_1
+      parameters:
+      - name: cluster
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: topicName
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          description: acls_1 200 response
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/AccessControl"
+  /api/{cluster}/topic/{topicName}/configs:
+    get:
+      tags:
+      - topic
+      summary: List all configs from a topic
+      operationId: config
+      parameters:
+      - name: cluster
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: topicName
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          description: config 200 response
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Config"
+    post:
+      tags:
+      - topic
+      summary: Update configs from a topic
+      operationId: updateConfig
+      parameters:
+      - name: cluster
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: topicName
+        in: path
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                configs:
+                  type: object
+                  additionalProperties:
+                    type: string
+        required: true
+      responses:
+        "200":
+          description: updateConfig 200 response
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Config"
+  /api/{cluster}/topic/{topicName}/data:
+    get:
+      tags:
+      - topic data
+      summary: Read datas from a topic
+      operationId: data
+      parameters:
+      - name: cluster
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: topicName
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: after
+        in: query
+        explode: false
+        schema:
+          type: string
+          nullable: true
+      - name: partition
+        in: query
+        explode: false
+        schema:
+          type: integer
+          format: int32
+          nullable: true
+      - name: sort
+        in: query
+        explode: false
+        schema:
+          nullable: true
+          allOf:
+          - $ref: "#/components/schemas/RecordRepository.Options.Sort"
+      - name: timestamp
+        in: query
+        explode: false
+        schema:
+          type: string
+          nullable: true
+      - name: endTimestamp
+        in: query
+        explode: false
+        schema:
+          type: string
+          nullable: true
+      - name: searchByKey
+        in: query
+        explode: false
+        schema:
+          type: string
+          nullable: true
+      - name: searchByValue
+        in: query
+        explode: false
+        schema:
+          type: string
+          nullable: true
+      - name: searchByHeaderKey
+        in: query
+        explode: false
+        schema:
+          type: string
+          nullable: true
+      - name: searchByHeaderValue
+        in: query
+        explode: false
+        schema:
+          type: string
+          nullable: true
+      - name: searchByKeySubject
+        in: query
+        explode: false
+        schema:
+          type: string
+          nullable: true
+      - name: searchByValueSubject
+        in: query
+        explode: false
+        schema:
+          type: string
+          nullable: true
+      responses:
+        "200":
+          description: data 200 response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ResultNextList_Record_"
+    post:
+      tags:
+      - topic data
+      summary: Produce data to a topic
+      operationId: produce
+      parameters:
+      - name: cluster
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: topicName
+        in: path
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                value:
+                  type: string
+                  nullable: true
+                key:
+                  type: string
+                  nullable: true
+                partition:
+                  type: integer
+                  format: int32
+                  nullable: true
+                timestamp:
+                  type: string
+                  nullable: true
+                headers:
+                  type: array
+                  items:
+                    $ref: "#/components/schemas/KeyValue_String.String_"
+                keySchema:
+                  type: string
+                  nullable: true
+                valueSchema:
+                  type: string
+                  nullable: true
+                multiMessage:
+                  type: boolean
+                keyValueSeparator:
+                  type: string
+                  nullable: true
+        required: true
+      responses:
+        "200":
+          description: produce 200 response
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Record"
+    delete:
+      tags:
+      - topic data
+      summary: Delete data from a topic by key
+      operationId: deleteRecordApi
+      parameters:
+      - name: cluster
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: topicName
+        in: path
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                partition:
+                  type: integer
+                  format: int32
+                key:
+                  type: string
+        required: true
+      responses:
+        "200":
+          description: deleteRecordApi 200 response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Record"
+  /api/{cluster}/topic/{topicName}/data/download:
+    get:
+      tags:
+      - topic data download
+      summary: Download data for a topic
+      operationId: download
+      parameters:
+      - name: cluster
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: topicName
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: after
+        in: query
+        explode: false
+        schema:
+          type: string
+          nullable: true
+      - name: partition
+        in: query
+        explode: false
+        schema:
+          type: integer
+          format: int32
+          nullable: true
+      - name: sort
+        in: query
+        explode: false
+        schema:
+          nullable: true
+          allOf:
+          - $ref: "#/components/schemas/RecordRepository.Options.Sort"
+      - name: timestamp
+        in: query
+        explode: false
+        schema:
+          type: string
+          nullable: true
+      - name: endTimestamp
+        in: query
+        explode: false
+        schema:
+          type: string
+          nullable: true
+      - name: searchByKey
+        in: query
+        explode: false
+        schema:
+          type: string
+          nullable: true
+      - name: searchByValue
+        in: query
+        explode: false
+        schema:
+          type: string
+          nullable: true
+      - name: searchByHeaderKey
+        in: query
+        explode: false
+        schema:
+          type: string
+          nullable: true
+      - name: searchByHeaderValue
+        in: query
+        explode: false
+        schema:
+          type: string
+          nullable: true
+      - name: searchByKeySubject
+        in: query
+        explode: false
+        schema:
+          type: string
+          nullable: true
+      - name: searchByValueSubject
+        in: query
+        explode: false
+        schema:
+          type: string
+          nullable: true
+      responses:
+        "200":
+          description: download 200 response
+          content:
+            application/json:
+              schema:
+                type: string
+                format: binary
+  /api/{cluster}/topic/{topicName}/data/empty:
+    delete:
+      tags:
+      - topic data
+      summary: Empty data from a topic
+      operationId: emptyTopic
+      parameters:
+      - name: cluster
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: topicName
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          description: emptyTopic 200 response
+          content:
+            application/json:
+              schema:
+                type: object
+  /api/{cluster}/topic/{topicName}/data/record/{partition}/{offset}:
+    get:
+      tags:
+      - topic data
+      summary: Get a single record by partition and offset
+      operationId: record
+      parameters:
+      - name: cluster
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: topicName
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: partition
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int32
+      - name: offset
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      responses:
+        "200":
+          description: record 200 response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ResultNextList_Record_"
+  /api/{cluster}/topic/{topicName}/data/search:
+    get:
+      tags:
+      - topic data
+      summary: Search for data for a topic
+      operationId: sse_1
+      parameters:
+      - name: cluster
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: topicName
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: after
+        in: query
+        explode: false
+        schema:
+          type: string
+          nullable: true
+      - name: partition
+        in: query
+        explode: false
+        schema:
+          type: integer
+          format: int32
+          nullable: true
+      - name: sort
+        in: query
+        explode: false
+        schema:
+          nullable: true
+          allOf:
+          - $ref: "#/components/schemas/RecordRepository.Options.Sort"
+      - name: timestamp
+        in: query
+        explode: false
+        schema:
+          type: string
+          nullable: true
+      - name: endTimestamp
+        in: query
+        explode: false
+        schema:
+          type: string
+          nullable: true
+      - name: searchByKey
+        in: query
+        explode: false
+        schema:
+          type: string
+          nullable: true
+      - name: searchByValue
+        in: query
+        explode: false
+        schema:
+          type: string
+          nullable: true
+      - name: searchByHeaderKey
+        in: query
+        explode: false
+        schema:
+          type: string
+          nullable: true
+      - name: searchByHeaderValue
+        in: query
+        explode: false
+        schema:
+          type: string
+          nullable: true
+      - name: searchByKeySubject
+        in: query
+        explode: false
+        schema:
+          type: string
+          nullable: true
+      - name: searchByValueSubject
+        in: query
+        explode: false
+        schema:
+          type: string
+          nullable: true
+      responses:
+        "200":
+          description: sse_1 200 response
+          content:
+            text/event-stream:
+              schema:
+                $ref: "#/components/schemas/Event_TopicController.SearchRecord_"
+  /api/{cluster}/topic/{topicName}/groups:
+    get:
+      tags:
+      - topic
+      summary: List all consumer groups from a topic
+      operationId: groups
+      parameters:
+      - name: cluster
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: topicName
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: groupsListView
+        in: query
+        explode: false
+        schema:
+          nullable: true
+          allOf:
+          - $ref: "#/components/schemas/TopicRepository.TopicGroupsListView"
+      responses:
+        "200":
+          description: groups 200 response
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/ConsumerGroup"
+  /api/{cluster}/topic/{topicName}/logs:
+    get:
+      tags:
+      - topic
+      summary: List all logs from a topic
+      operationId: logs
+      parameters:
+      - name: cluster
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: topicName
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          description: logs 200 response
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/LogDir"
+  /api/{cluster}/topic/{topicName}/offsets/start:
+    get:
+      tags:
+      - topic data
+      summary: Get topic partition offsets by timestamp
+      operationId: offsetsStart_1
+      parameters:
+      - name: cluster
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: topicName
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: timestamp
+        in: query
+        explode: false
+        schema:
+          type: string
+          format: date-time
+          nullable: true
+      responses:
+        "200":
+          description: offsetsStart_1 200 response
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/RecordRepository.TimeOffset"
+  /api/{cluster}/topic/{topicName}/partitions:
+    get:
+      tags:
+      - topic
+      summary: List all partition from a topic
+      operationId: partitions
+      parameters:
+      - name: cluster
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: topicName
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          description: partitions 200 response
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Partition"
+    post:
+      tags:
+      - topic
+      summary: Increase partition for a topic
+      operationId: increasePartition
+      parameters:
+      - name: cluster
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: topicName
+        in: path
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties:
+                type: integer
+                format: int32
+        required: true
+      responses:
+        "200":
+          description: increasePartition 200 response
+          content:
+            application/json:
+              schema:
+                type: object
+  /api/{cluster}/ui-options:
+    get:
+      tags:
+      - AKHQ
+      summary: Get ui options for cluster
+      operationId: options
+      parameters:
+      - name: cluster
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          description: options 200 response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Connection.UiOptions"
+components:
+  schemas:
+    AccessControl:
+      required:
+      - principal
+      type: object
+      properties:
+        principal:
+          type: string
+        acls:
+          type: array
+          items:
+            $ref: "#/components/schemas/AccessControl.Acl"
+    AccessControl.Acl:
+      type: object
+      properties:
+        host:
+          type: string
+        operation:
+          $ref: "#/components/schemas/AccessControl.Operation"
+        resource:
+          $ref: "#/components/schemas/AccessControl.Resource"
+    AccessControl.Operation:
+      type: object
+      properties:
+        operation:
+          $ref: "#/components/schemas/AclOperation"
+        permissionType:
+          $ref: "#/components/schemas/AclPermissionType"
+    AccessControl.Resource:
+      type: object
+      properties:
+        resourceType:
+          $ref: "#/components/schemas/ResourceType"
+        name:
+          type: string
+        patternType:
+          $ref: "#/components/schemas/PatternType"
+    AclOperation:
+      type: string
+      enum:
+      - UNKNOWN
+      - ANY
+      - ALL
+      - READ
+      - WRITE
+      - CREATE
+      - DELETE
+      - ALTER
+      - DESCRIBE
+      - CLUSTER_ACTION
+      - DESCRIBE_CONFIGS
+      - ALTER_CONFIGS
+      - IDEMPOTENT_WRITE
+      - CREATE_TOKENS
+      - DESCRIBE_TOKENS
+    AclPermissionType:
+      type: string
+      enum:
+      - UNKNOWN
+      - ANY
+      - DENY
+      - ALLOW
+    AkhqController.AuthDefinition:
+      required:
+      - formEnabled
+      - loginEnabled
+      - oauthAuths
+      - oidcAuths
+      - version
+      type: object
+      properties:
+        loginEnabled:
+          type: boolean
+        formEnabled:
+          type: boolean
+        oidcAuths:
+          type: array
+          items:
+            $ref: "#/components/schemas/AkhqController.OidcAuth"
+        oauthAuths:
+          type: array
+          items:
+            $ref: "#/components/schemas/AkhqController.OauthAuth"
+        version:
+          type: string
+    AkhqController.AuthUser:
+      required:
+      - logged
+      - roles
+      - username
+      type: object
+      properties:
+        logged:
+          type: boolean
+        username:
+          type: string
+        roles:
+          type: array
+          items:
+            $ref: "#/components/schemas/AkhqController.AuthUser.AuthPermissions"
+    AkhqController.AuthUser.AuthPermissions:
+      required:
+      - clusters
+      - patterns
+      type: object
+      properties:
+        resources:
+          type: array
+          items:
+            $ref: "#/components/schemas/Role.Resource"
+        actions:
+          type: array
+          items:
+            $ref: "#/components/schemas/Role.Action"
+        patterns:
+          type: array
+          items:
+            type: string
+        clusters:
+          type: array
+          items:
+            type: string
+    AkhqController.ClusterDefinition:
+      required:
+      - connects
+      - id
+      - ksqldbs
+      - registry
+      - registryType
+      type: object
+      properties:
+        id:
+          type: string
+        registry:
+          type: boolean
+        registryType:
+          type: string
+        connects:
+          type: array
+          items:
+            type: string
+        ksqldbs:
+          type: array
+          items:
+            type: string
+    AkhqController.OauthAuth:
+      required:
+      - key
+      - label
+      type: object
+      properties:
+        key:
+          type: string
+        label:
+          type: string
+    AkhqController.OidcAuth:
+      required:
+      - key
+      - label
+      type: object
+      properties:
+        key:
+          type: string
+        label:
+          type: string
+    Cluster:
+      type: object
+      properties:
+        id:
+          type: string
+        nodes:
+          type: array
+          items:
+            $ref: "#/components/schemas/Node"
+        controller:
+          $ref: "#/components/schemas/Node"
+    Config:
+      required:
+      - name
+      - value
+      type: object
+      properties:
+        name:
+          type: string
+        value:
+          type: string
+        description:
+          type: string
+        source:
+          $ref: "#/components/schemas/Config.Source"
+        sensitive:
+          type: boolean
+        readOnly:
+          type: boolean
+        synonyms:
+          type: array
+          items:
+            $ref: "#/components/schemas/Config.Synonym"
+    Config.Source:
+      type: string
+      enum:
+      - DYNAMIC_TOPIC_CONFIG
+      - DYNAMIC_BROKER_CONFIG
+      - DYNAMIC_DEFAULT_BROKER_CONFIG
+      - STATIC_BROKER_CONFIG
+      - DEFAULT_CONFIG
+      - UNKNOWN
+    Config.Synonym:
+      type: object
+      properties:
+        name:
+          type: string
+        value:
+          type: string
+        source:
+          $ref: "#/components/schemas/Config.Source"
+    ConnectDefinition:
+      type: object
+      properties:
+        shortClassName:
+          type: string
+        paused:
+          type: boolean
+        name:
+          type: string
+        type:
+          type: string
+        configs:
+          type: object
+          additionalProperties:
+            type: string
+        tasks:
+          type: array
+          items:
+            $ref: "#/components/schemas/ConnectDefinition.TaskDefinition"
+    ConnectDefinition.TaskDefinition:
+      type: object
+      properties:
+        connector:
+          type: string
+        id:
+          type: integer
+          format: int32
+        state:
+          type: string
+        workerId:
+          type: string
+        trace:
+          type: string
+    ConnectPlugin:
+      type: object
+      properties:
+        shortClassName:
+          type: string
+        className:
+          type: string
+        type:
+          type: string
+        version:
+          type: string
+        definitions:
+          type: array
+          items:
+            $ref: "#/components/schemas/ConnectPlugin.Definition"
+    ConnectPlugin.Definition:
+      type: object
+      properties:
+        name:
+          type: string
+        type:
+          type: string
+        required:
+          type: boolean
+        defaultValue:
+          type: string
+        importance:
+          type: string
+        documentation:
+          type: string
+        group:
+          type: string
+        width:
+          type: string
+        displayName:
+          type: string
+        dependents:
+          type: array
+          items:
+            type: string
+        order:
+          type: integer
+          format: int32
+    Connection.UiOptions:
+      type: object
+      properties:
+        topic:
+          $ref: "#/components/schemas/UiOptionsTopic"
+        topicData:
+          $ref: "#/components/schemas/UiOptionsTopicData"
+    Consumer:
+      type: object
+      properties:
+        id:
+          type: string
+        clientId:
+          type: string
+        host:
+          type: string
+        assignments:
+          type: array
+          items:
+            $ref: "#/components/schemas/TopicPartition"
+    ConsumerGroup:
+      type: object
+      properties:
+        activeTopics:
+          type: array
+          items:
+            type: string
+        topics:
+          type: array
+          items:
+            type: string
+        id:
+          type: string
+        simpleConsumerGroup:
+          type: boolean
+        partitionAssignor:
+          type: string
+        state:
+          $ref: "#/components/schemas/GroupState"
+        coordinator:
+          $ref: "#/components/schemas/Node"
+        members:
+          type: array
+          items:
+            $ref: "#/components/schemas/Consumer"
+        offsets:
+          type: array
+          items:
+            $ref: "#/components/schemas/TopicPartition.ConsumerGroupOffset"
+    DateTimeFormat:
+      type: string
+      enum:
+      - RELATIVE
+      - ISO
+    Event_TailController.TailRecord_:
+      type: object
+      properties:
+        data:
+          $ref: "#/components/schemas/TailController.TailRecord"
+        id:
+          type: string
+        name:
+          type: string
+        comment:
+          type: string
+        retry:
+          type: string
+    Event_TopicController.SearchRecord_:
+      type: object
+      properties:
+        data:
+          $ref: "#/components/schemas/TopicController.SearchRecord"
+        id:
+          type: string
+        name:
+          type: string
+        comment:
+          type: string
+        retry:
+          type: string
+    GroupController.OffsetsUpdate:
+      type: object
+      properties:
+        topic:
+          type: string
+        partition:
+          type: integer
+          format: int32
+        offset:
+          type: integer
+          format: int64
+    GroupState:
+      type: string
+      enum:
+      - UNKNOWN
+      - PREPARING_REBALANCE
+      - COMPLETING_REBALANCE
+      - STABLE
+      - DEAD
+      - EMPTY
+      - ASSIGNING
+      - RECONCILING
+    KeyValue_String.String_:
+      required:
+      - key
+      - value
+      type: object
+      properties:
+        key:
+          type: string
+        value:
+          type: string
+      description: Represents a simple key-value pair of any type
+    KsqlDbQuery:
+      type: object
+      properties:
+        queryType:
+          type: string
+        id:
+          type: string
+        sql:
+          type: string
+        sink:
+          type: string
+        sinkTopic:
+          type: string
+    KsqlDbQueryResult:
+      type: object
+      properties:
+        columnNames:
+          type: array
+          items:
+            type: string
+        columnValues:
+          type: array
+          items:
+            type: string
+    KsqlDbServerInfo:
+      type: object
+      properties:
+        serverVersion:
+          type: string
+        kafkaClusterId:
+          type: string
+        ksqlServiceId:
+          type: string
+    KsqlDbStream:
+      type: object
+      properties:
+        name:
+          type: string
+        topic:
+          type: string
+        keyFormat:
+          type: string
+        valueFormat:
+          type: string
+        isWindowed:
+          type: boolean
+    KsqlDbTable:
+      type: object
+      properties:
+        name:
+          type: string
+        topic:
+          type: string
+        keyFormat:
+          type: string
+        valueFormat:
+          type: string
+        isWindowed:
+          type: boolean
+    LogDir:
+      required:
+      - brokerId
+      - path
+      type: object
+      properties:
+        brokerId:
+          type: integer
+          format: int32
+        path:
+          type: string
+        topic:
+          type: string
+        partition:
+          type: integer
+          format: int32
+        size:
+          type: integer
+          format: int64
+        offsetLag:
+          type: integer
+          format: int64
+        future:
+          type: boolean
+    Node:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int32
+        host:
+          type: string
+        port:
+          type: integer
+          format: int32
+        rack:
+          type: string
+    Node.Partition:
+      required:
+      - inSyncReplicas
+      - leader
+      type: object
+      allOf:
+      - $ref: "#/components/schemas/Node"
+      - type: object
+        properties:
+          leader:
+            type: boolean
+          inSyncReplicas:
+            type: boolean
+    NodeController.NodePartition:
+      required:
+      - countInSyncReplicas
+      - countLeader
+      - id
+      - totalPartitions
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int32
+        countLeader:
+          type: integer
+          format: int32
+        countInSyncReplicas:
+          type: integer
+          format: int32
+        totalPartitions:
+          type: integer
+          format: int64
+    Partition:
+      required:
+      - logDir
+      - topic
+      type: object
+      properties:
+        leader:
+          $ref: "#/components/schemas/Node.Partition"
+        logDirSize:
+          type: integer
+          format: int64
+        id:
+          type: integer
+          format: int32
+        topic:
+          type: string
+        nodes:
+          type: array
+          items:
+            $ref: "#/components/schemas/Node.Partition"
+        logDir:
+          type: array
+          items:
+            $ref: "#/components/schemas/LogDir"
+        firstOffset:
+          type: integer
+          format: int64
+        lastOffset:
+          type: integer
+          format: int64
+    PatternType:
+      type: string
+      enum:
+      - UNKNOWN
+      - ANY
+      - MATCH
+      - LITERAL
+      - PREFIXED
+    Record:
+      required:
+      - headers
+      - topic
+      type: object
+      properties:
+        key:
+          type: string
+        value:
+          type: string
+        topic:
+          $ref: "#/components/schemas/Topic"
+        partition:
+          type: integer
+          format: int32
+        offset:
+          type: integer
+          format: int64
+        timestamp:
+          type: string
+          format: date-time
+        keySchemaId:
+          type: string
+        keySubject:
+          type: string
+        valueSchemaId:
+          type: string
+        valueSubject:
+          type: string
+        headers:
+          type: array
+          items:
+            $ref: "#/components/schemas/KeyValue_String.String_"
+    RecordRepository.CopyResult:
+      required:
+      - records
+      type: object
+      properties:
+        records:
+          type: integer
+          format: int32
+    RecordRepository.Options.Sort:
+      type: string
+      enum:
+      - OLDEST
+      - NEWEST
+    RecordRepository.TimeOffset:
+      required:
+      - offset
+      - partition
+      - topic
+      type: object
+      properties:
+        topic:
+          type: string
+        partition:
+          type: integer
+          format: int32
+        offset:
+          type: integer
+          format: int64
+    ResourceType:
+      type: string
+      enum:
+      - UNKNOWN
+      - ANY
+      - TOPIC
+      - GROUP
+      - CLUSTER
+      - TRANSACTIONAL_ID
+      - DELEGATION_TOKEN
+      - USER
+    ResultNextList_Record_:
+      type: object
+      properties:
+        results:
+          type: array
+          items:
+            $ref: "#/components/schemas/Record"
+        after:
+          type: string
+        size:
+          type: integer
+          format: int64
+    ResultPagedList_ConnectDefinition_:
+      type: object
+      properties:
+        results:
+          type: array
+          items:
+            $ref: "#/components/schemas/ConnectDefinition"
+        before:
+          type: string
+        after:
+          type: string
+        page:
+          type: integer
+          format: int32
+        total:
+          type: integer
+          format: int32
+        pageSize:
+          type: integer
+          format: int32
+    ResultPagedList_ConsumerGroup_:
+      type: object
+      properties:
+        results:
+          type: array
+          items:
+            $ref: "#/components/schemas/ConsumerGroup"
+        before:
+          type: string
+        after:
+          type: string
+        page:
+          type: integer
+          format: int32
+        total:
+          type: integer
+          format: int32
+        pageSize:
+          type: integer
+          format: int32
+    ResultPagedList_KsqlDbQuery_:
+      type: object
+      properties:
+        results:
+          type: array
+          items:
+            $ref: "#/components/schemas/KsqlDbQuery"
+        before:
+          type: string
+        after:
+          type: string
+        page:
+          type: integer
+          format: int32
+        total:
+          type: integer
+          format: int32
+        pageSize:
+          type: integer
+          format: int32
+    ResultPagedList_KsqlDbStream_:
+      type: object
+      properties:
+        results:
+          type: array
+          items:
+            $ref: "#/components/schemas/KsqlDbStream"
+        before:
+          type: string
+        after:
+          type: string
+        page:
+          type: integer
+          format: int32
+        total:
+          type: integer
+          format: int32
+        pageSize:
+          type: integer
+          format: int32
+    ResultPagedList_KsqlDbTable_:
+      type: object
+      properties:
+        results:
+          type: array
+          items:
+            $ref: "#/components/schemas/KsqlDbTable"
+        before:
+          type: string
+        after:
+          type: string
+        page:
+          type: integer
+          format: int32
+        total:
+          type: integer
+          format: int32
+        pageSize:
+          type: integer
+          format: int32
+    ResultPagedList_Schema_:
+      type: object
+      properties:
+        results:
+          type: array
+          items:
+            $ref: "#/components/schemas/Schema"
+        before:
+          type: string
+        after:
+          type: string
+        page:
+          type: integer
+          format: int32
+        total:
+          type: integer
+          format: int32
+        pageSize:
+          type: integer
+          format: int32
+    ResultPagedList_Topic_:
+      type: object
+      properties:
+        results:
+          type: array
+          items:
+            $ref: "#/components/schemas/Topic"
+        before:
+          type: string
+        after:
+          type: string
+        page:
+          type: integer
+          format: int32
+        total:
+          type: integer
+          format: int32
+        pageSize:
+          type: integer
+          format: int32
+    Role.Action:
+      type: string
+      enum:
+      - READ
+      - CREATE
+      - UPDATE
+      - DELETE
+      - UPDATE_OFFSET
+      - DELETE_OFFSET
+      - READ_CONFIG
+      - ALTER_CONFIG
+      - DELETE_VERSION
+      - UPDATE_STATE
+      - EXECUTE
+    Role.Resource:
+      type: string
+      enum:
+      - TOPIC
+      - TOPIC_DATA
+      - CONSUMER_GROUP
+      - CONNECT_CLUSTER
+      - CONNECTOR
+      - SCHEMA
+      - NODE
+      - ACL
+      - KSQLDB
+    Schema:
+      required:
+      - subject
+      - version
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int32
+        subject:
+          type: string
+        version:
+          type: integer
+          format: int32
+        compatibilityLevel:
+          $ref: "#/components/schemas/Schema.Config.CompatibilityLevelConfig"
+        schema:
+          type: string
+        schemaType:
+          type: string
+        references:
+          type: array
+          items:
+            $ref: "#/components/schemas/SchemaReference"
+        exception:
+          type: string
+    Schema.Config.CompatibilityLevelConfig:
+      type: string
+      enum:
+      - NONE
+      - BACKWARD
+      - BACKWARD_TRANSITIVE
+      - FORWARD
+      - FORWARD_TRANSITIVE
+      - FULL
+      - FULL_TRANSITIVE
+    SchemaReference:
+      type: object
+      properties:
+        name:
+          type: string
+          description: Reference name
+          example: io.confluent.kafka.example.User
+        subject:
+          type: string
+          description: Name of the referenced subject
+          example: User
+        version:
+          type: integer
+          description: Version number of the referenced subject
+          format: int32
+          example: 1
+      description: Schema reference
+    TailController.TailRecord:
+      type: object
+      properties:
+        records:
+          type: array
+          items:
+            $ref: "#/components/schemas/Record"
+        offsets:
+          type: array
+          items:
+            type: string
+    Topic:
+      type: object
+      properties:
+        internalTopic:
+          type: boolean
+        streamTopic:
+          type: boolean
+        replicaCount:
+          type: integer
+          format: int64
+        inSyncReplicaCount:
+          type: integer
+          format: int64
+        logDir:
+          type: array
+          items:
+            $ref: "#/components/schemas/LogDir"
+        logDirSize:
+          type: integer
+          format: int64
+        size:
+          type: integer
+          format: int64
+        name:
+          type: string
+        internal:
+          type: boolean
+        partitions:
+          type: array
+          items:
+            $ref: "#/components/schemas/Partition"
+    TopicController.OffsetCopy:
+      type: object
+      properties:
+        partition:
+          type: integer
+          format: int32
+        offset:
+          type: integer
+          format: int64
+    TopicController.SearchRecord:
+      required:
+      - after
+      - percent
+      type: object
+      properties:
+        percent:
+          type: number
+          format: double
+        records:
+          type: array
+          items:
+            $ref: "#/components/schemas/Record"
+        after:
+          type: string
+    TopicPartition:
+      type: object
+      properties:
+        topic:
+          type: string
+        partition:
+          type: integer
+          format: int32
+    TopicPartition.ConsumerGroupOffset:
+      type: object
+      allOf:
+      - $ref: "#/components/schemas/TopicPartition"
+      - type: object
+        properties:
+          offsetLag:
+            type: integer
+            format: int64
+            nullable: true
+          offset:
+            type: integer
+            format: int64
+            nullable: true
+          metadata:
+            type: string
+            nullable: true
+          firstOffset:
+            type: integer
+            format: int64
+            nullable: true
+          lastOffset:
+            type: integer
+            format: int64
+            nullable: true
+    TopicRepository.TopicGroupsListView:
+      type: string
+      enum:
+      - ALL
+      - HIDE_EMPTY
+    TopicRepository.TopicListView:
+      type: string
+      enum:
+      - ALL
+      - HIDE_INTERNAL
+      - HIDE_INTERNAL_STREAM
+      - HIDE_STREAM
+    TopicSchema:
+      type: object
+      properties:
+        key:
+          type: array
+          items:
+            $ref: "#/components/schemas/Schema"
+        value:
+          type: array
+          items:
+            $ref: "#/components/schemas/Schema"
+    UiOptionsTopic:
+      type: object
+      properties:
+        defaultView:
+          type: string
+        skipConsumerGroups:
+          type: boolean
+        skipLastRecord:
+          type: boolean
+        showAllConsumerGroups:
+          type: boolean
+        groupsDefaultView:
+          type: string
+    UiOptionsTopicData:
+      required:
+      - dateTimeFormat
+      - sort
+      type: object
+      properties:
+        sort:
+          type: string
+        dateTimeFormat:
+          $ref: "#/components/schemas/DateTimeFormat"

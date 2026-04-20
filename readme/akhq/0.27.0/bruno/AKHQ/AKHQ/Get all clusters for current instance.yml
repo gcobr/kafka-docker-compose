@@ -1,0 +1,42 @@
+info:
+  name: Get all clusters for current instance
+  type: http
+  seq: 2
+  tags:
+    - AKHQ
+
+http:
+  method: GET
+  url: "{{baseUrl}}/api/cluster"
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+
+examples:
+  - name: 200 Response
+    description: list 200 response
+    request:
+      url: "{{baseUrl}}/api/cluster"
+      method: GET
+    response:
+      status: 200
+      statusText: OK
+      headers:
+        - name: Content-Type
+          value: application/json
+      body:
+        type: json
+        data: |-
+          [
+            {
+              "id": "",
+              "registry": false,
+              "registryType": "",
+              "connects": [],
+              "ksqldbs": []
+            }
+          ]

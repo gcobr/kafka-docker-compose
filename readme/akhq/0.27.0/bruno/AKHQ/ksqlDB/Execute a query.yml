@@ -1,0 +1,65 @@
+info:
+  name: Execute a query
+  type: http
+  seq: 4
+  tags:
+    - ksqlDB
+
+http:
+  method: PUT
+  url: "{{baseUrl}}/api/:cluster/ksqldb/:ksqlDbId/queries/pull"
+  params:
+    - name: cluster
+      value: ""
+      type: path
+    - name: ksqlDbId
+      value: ""
+      type: path
+  body:
+    type: json
+    data: |-
+      {
+        "sql": "",
+        "properties": {}
+      }
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+
+examples:
+  - name: 200 Response
+    description: pullQuery 200 response
+    request:
+      url: "{{baseUrl}}/api/:cluster/ksqldb/:ksqlDbId/queries/pull"
+      method: PUT
+      params:
+        - name: cluster
+          value: ""
+          type: path
+        - name: ksqlDbId
+          value: ""
+          type: path
+      body:
+        type: json
+        data: |-
+          {
+            "sql": "",
+            "properties": {}
+          }
+    response:
+      status: 200
+      statusText: OK
+      headers:
+        - name: Content-Type
+          value: application/json
+      body:
+        type: json
+        data: |-
+          {
+            "columnNames": [],
+            "columnValues": []
+          }

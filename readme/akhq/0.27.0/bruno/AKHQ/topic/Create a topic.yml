@@ -1,0 +1,96 @@
+info:
+  name: Create a topic
+  type: http
+  seq: 4
+  tags:
+    - topic
+
+http:
+  method: POST
+  url: "{{baseUrl}}/api/:cluster/topic"
+  params:
+    - name: cluster
+      value: ""
+      type: path
+  body:
+    type: json
+    data: |-
+      {
+        "name": "",
+        "partition": 0,
+        "replication": 0,
+        "configs": {}
+      }
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+
+examples:
+  - name: 200 Response
+    description: create_2 200 response
+    request:
+      url: "{{baseUrl}}/api/:cluster/topic"
+      method: POST
+      params:
+        - name: cluster
+          value: ""
+          type: path
+      body:
+        type: json
+        data: |-
+          {
+            "name": "",
+            "partition": 0,
+            "replication": 0,
+            "configs": {}
+          }
+    response:
+      status: 200
+      statusText: OK
+      headers:
+        - name: Content-Type
+          value: application/json
+      body:
+        type: json
+        data: |-
+          {
+            "internalTopic": false,
+            "streamTopic": false,
+            "replicaCount": 0,
+            "inSyncReplicaCount": 0,
+            "logDir": [
+              {
+                "brokerId": 0,
+                "path": "",
+                "topic": "",
+                "partition": 0,
+                "size": 0,
+                "offsetLag": 0,
+                "future": false
+              }
+            ],
+            "logDirSize": 0,
+            "size": 0,
+            "name": "",
+            "internal": false,
+            "partitions": [
+              {
+                "leader": {},
+                "logDirSize": 0,
+                "id": 0,
+                "topic": "",
+                "nodes": [
+                  {}
+                ],
+                "logDir": [
+                  {}
+                ],
+                "firstOffset": 0,
+                "lastOffset": 0
+              }
+            ]
+          }

@@ -1,0 +1,64 @@
+info:
+  name: List all configs for a node
+  type: http
+  seq: 3
+  tags:
+    - node
+
+http:
+  method: GET
+  url: "{{baseUrl}}/api/:cluster/node/:nodeId/configs"
+  params:
+    - name: cluster
+      value: ""
+      type: path
+    - name: nodeId
+      value: ""
+      type: path
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+
+examples:
+  - name: 200 Response
+    description: nodeConfig 200 response
+    request:
+      url: "{{baseUrl}}/api/:cluster/node/:nodeId/configs"
+      method: GET
+      params:
+        - name: cluster
+          value: ""
+          type: path
+        - name: nodeId
+          value: ""
+          type: path
+    response:
+      status: 200
+      statusText: OK
+      headers:
+        - name: Content-Type
+          value: application/json
+      body:
+        type: json
+        data: |-
+          [
+            {
+              "name": "",
+              "value": "",
+              "description": "",
+              "source": "DYNAMIC_TOPIC_CONFIG",
+              "sensitive": false,
+              "readOnly": false,
+              "synonyms": [
+                {
+                  "name": "",
+                  "value": "",
+                  "source": "DYNAMIC_TOPIC_CONFIG"
+                }
+              ]
+            }
+          ]

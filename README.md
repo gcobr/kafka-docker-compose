@@ -32,6 +32,8 @@ All brokers are configured to run in KRaft mode with:
 - Accessible at http://localhost:8079.
 - Provides similar functionality to kafka-ui with a different interface.
 
+**AKHQ API:** See [AKHQ](./readme/akhq/README.md)
+
 ## Usage
 
 ### Starting the Cluster
