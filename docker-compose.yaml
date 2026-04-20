@@ -202,7 +202,7 @@ services:
 
   akhq:
     # AKHQ as a second Kafka web UI.
-    image: tchiotludo/akhq:latest
+    image: tchiotludo/akhq:0.27.0
     container_name: akhq
     hostname: akhq
     depends_on:
