@@ -7,15 +7,15 @@ This project provides a Docker Compose setup for running a local Apache Kafka cl
 The [docker-compose.yaml](./docker-compose.yaml) file spins up the following services:
 
 ### Kafka Brokers
-- **kafka-1**: Kafka broker/controller node 1, accessible on host port `9094`
-- **kafka-2**: Kafka broker/controller node 2, accessible on host port `9095`
-- **kafka-3**: Kafka broker/controller node 3, accessible on host port `9096`
+- **kafka-1**: Kafka broker/controller node 1, accessible on host ports `9094` (plaintext) and `9097` (mTLS)
+- **kafka-2**: Kafka broker/controller node 2, accessible on host ports `9095` (plaintext) and `9098` (mTLS)
+- **kafka-3**: Kafka broker/controller node 3, accessible on host ports `9096` (plaintext) and `9099` (mTLS)
 
 All brokers are configured to run in KRaft mode with:
 - Shared cluster ID: `abcdefghijklmnopqrstuv`.
 - 3-node controller quorum for fault tolerance.
 - Replication factors set for high availability (default replication factor: 3, min in-sync replicas: 2).
-- Plaintext listeners for local development.
+- Plaintext and mTLS listeners for local development.
 - Automatic topic creation disabled.
 
 ### Kafka UI
@@ -54,7 +54,9 @@ docker-compose down -v
 ```
 
 ### Accessing Kafka
-- **Bootstrap servers** for external clients: `localhost:9094,localhost:9095,localhost:9096`.
+- **Bootstrap servers** for external clients:
+  - Plaintext: `localhost:9094,localhost:9095,localhost:9096`
+  - mTLS: `localhost:9097,localhost:9098,localhost:9099`
 - Use any of the host ports to connect to the cluster.
 - For Docker-internal communication, use `kafka-1:9092`, `kafka-2:9092`, `kafka-3:9092`.
 
@@ -91,8 +93,9 @@ The report is written to [instrospection/kafka-introspection-report.md](./instro
 - **Schema handling**: The brokers do not require messages to include a schema ID.
 - **Schema ID behavior**: If a producer includes a schema ID, Kafka itself will not validate it against any registry or schema store.
 - **Persistence**: Data is persisted in named Docker volumes (`kafka_1_`, `kafka_2_`, `kafka_3_`).
-- **Security**: Plaintext listeners are used for local development only. Do not use this configuration in production.
-- **Ports**: Host ports 9094-9096 are exposed for Kafka brokers, 8078 for Kafka UI, and 8079 for AKHQ.
+- **Security**: Plaintext listeners are used for local development only. mTLS listeners are also available for secure connections. Do not use plaintext in production.
+- **mTLS Configuration**: The cluster includes mTLS listeners using self-signed certificates. Client certificates are required for mTLS connections. See the [certs](./certs/) directory for certificate generation details.
+- **Ports**: Host ports 9094-9096 are exposed for Kafka brokers (plaintext), 9097-9099 for mTLS, 8078 for Kafka UI, and 8079 for AKHQ.
 
 ## Prerequisites
 

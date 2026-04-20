@@ -1,0 +1,10 @@
+[ req ]
+distinguished_name = req_distinguished_name
+req_extensions = v3_req
+prompt = no
+
+[ req_distinguished_name ]
+CN = kafka-1
+
+[ v3_req ]
+subjectAltName = DNS:kafka-1,DNS:localhost,IP:127.0.0.1
